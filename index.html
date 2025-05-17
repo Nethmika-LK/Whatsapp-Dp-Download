@@ -104,27 +104,32 @@
 
   <script>
     async function downloadVideo() {
-      const url = document.getElementById("tiktokUrl").value;
-      const resultDiv = document.getElementById("result");
-      resultDiv.innerHTML = "<p>Processing...</p>";
+  const url = document.getElementById("tiktokUrl").value.trim();
+  const resultDiv = document.getElementById("result");
 
-      try {
-        const res = await fetch(`https://sadiya-tech-apis.vercel.app/download/tiktokdl?url=${encodeURIComponent(url)}&apikey=sadiya`);
-        const data = await res.json();
+  if (!url) {
+    resultDiv.innerHTML = "<p>Please enter a TikTok URL.</p>";
+    return;
+  }
 
-        if (data && data.video && data.video.nowm) {
-          resultDiv.innerHTML = `
-            <video controls src="${data.video.nowm}"></video>
-            <a class="download-link" href="${data.video.nowm}" download>Download Video</a>
-          `;
-        } else {
-          resultDiv.innerHTML = "<p>Failed to get video. Please check the URL.</p>";
-        }
-      } catch (error) {
-        resultDiv.innerHTML = "<p>Error fetching video.</p>";
-        console.error(error);
-      }
+  resultDiv.innerHTML = "<p>Processing...</p>";
+
+  try {
+    const res = await fetch(`https://sadiya-tech-apis.vercel.app/download/tiktokdl?url=${encodeURIComponent(url)}&apikey=sadiya`);
+    const data = await res.json();
+
+    if (data?.status && data?.video?.nowm) {
+      resultDiv.innerHTML = `
+        <video controls src="${data.video.nowm}"></video>
+        <a class="download-link" href="${data.video.nowm}" download>Download Video</a>
+      `;
+    } else {
+      resultDiv.innerHTML = `<p>Failed to get video. API Response:<br><code>${JSON.stringify(data)}</code></p>`;
     }
+  } catch (error) {
+    resultDiv.innerHTML = `<p>Error fetching video: ${error.message}</p>`;
+  }
+}
   </script>
 </body>
 </html>
