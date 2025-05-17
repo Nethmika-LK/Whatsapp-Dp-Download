@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TikTok Downloader | No Watermark</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ff0050, #ff7a00);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      outline: none;
+    }
+
+    button {
+      background: white;
+      color: #ff0050;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #ffe1ec;
+    }
+
+    video {
+      margin-top: 20px;
+      width: 100%;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    a.download-link {
+      display: inline-block;
+      margin-top: 15px;
+      color: white;
+      background: #00e676;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    a.download-link:hover {
+      background: #00c853;
+    }
+
+    #result {
+      margin-top: 20px;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>TikTok Video Downloader</h1>
+    <input type="text" id="tiktokUrl" placeholder="Paste TikTok URL here..." />
+    <button onclick="downloadVideo()">Download</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function downloadVideo() {
+      const url = document.getElementById("tiktokUrl").value;
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = "<p>Processing...</p>";
+
+      try {
+        const res = await fetch(`https://sadiya-tech-apis.vercel.app/download/tiktokdl?url=${encodeURIComponent(url)}&apikey=sadiya`);
+        const data = await res.json();
+
+        if (data && data.video && data.video.nowm) {
+          resultDiv.innerHTML = `
+            <video controls src="${data.video.nowm}"></video>
+            <a class="download-link" href="${data.video.nowm}" download>Download Video</a>
+          `;
+        } else {
+          resultDiv.innerHTML = "<p>Failed to get video. Please check the URL.</p>";
+        }
+      } catch (error) {
+        resultDiv.innerHTML = "<p>Error fetching video.</p>";
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
