@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 export default async function handler(req, res) {
   const { number } = req.query;
 
-  if (!number || !/^\d+$/.test(number)) {
+  if (!number || !/^[0-9]+$/.test(number)) {
     return res.status(400).json({ success: false, message: 'Invalid number format' });
   }
 
@@ -20,7 +20,6 @@ export default async function handler(req, res) {
 
     const html = await response.text();
     const $ = cheerio.load(html);
-
     const dpUrl = $('.download-btn').attr('href');
 
     if (!dpUrl || !dpUrl.startsWith('https')) {
