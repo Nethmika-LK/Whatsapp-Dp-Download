@@ -1,8 +1,11 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const scrapeTikTok = require('./scraper');
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/api/tiktok', async (req, res) => {
   const { url, apikey } = req.query;
@@ -23,10 +26,6 @@ app.get('/api/tiktok', async (req, res) => {
   res.json(result);
 });
 
-app.get('/', (req, res) => {
-  res.send(
-    '<h2>TikTok Downloader API</h2><p>Use <code>/api/tiktok?url=&apikey=</code></p>'
-  );
-});
-
-app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`✅ Server running on http://localhost:${PORT}`)
+);
