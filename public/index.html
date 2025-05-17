@@ -1,112 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>WhatsApp DP Downloader</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
       text-align: center;
-      width: 100%;
-      max-width: 400px;
+      margin-top: 50px;
     }
-    select, input {
-      width: 100%;
+    input, button {
       padding: 10px;
-      margin: 10px 0 5px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    button {
-      background: #25D366;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #128C7E;
+      margin: 10px;
+      width: 250px;
     }
     img {
-      width: 100%;
-      max-width: 250px;
+      margin-top: 20px;
+      width: 200px;
       border-radius: 10px;
-      margin-top: 10px;
-    }
-    a {
-      display: block;
-      margin-top: 10px;
-      color: #25D366;
-      text-decoration: none;
-      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>WhatsApp DP Downloader</h2>
-
-    <select id="countryCode">
-      <option value="94">🇱🇰 +94 (Sri Lanka)</option>
-      <option value="91">🇮🇳 +91 (India)</option>
-      <option value="880">🇧🇩 +880 (Bangladesh)</option>
-      <option value="92">🇵🇰 +92 (Pakistan)</option>
-      <option value="1">🇺🇸 +1 (USA)</option>
-    </select>
-
-    <input type="text" id="number" placeholder="Enter phone number without +94" />
-
-    <button id="getDPBtn">Get DP</button>
-    <div id="loader" style="display:none;">Loading...</div>
-
-    <div id="result" style="display:none;">
-      <img id="dpImage" alt="WhatsApp DP"/>
-      <a id="downloadLink" href="#" download="whatsapp_dp.jpg">Download</a>
-    </div>
-  </div>
+  <h1>WhatsApp DP Downloader</h1>
+  <input type="text" id="number" placeholder="Enter WhatsApp number">
+  <button onclick="getDP()">Get DP</button>
+  <div id="result"></div>
 
   <script>
-    document.getElementById('getDPBtn').onclick = async () => {
-      const code = document.getElementById('countryCode').value;
-      const number = document.getElementById('number').value.trim();
-      const fullNumber = code + number;
-
-      if (!number || isNaN(number)) return alert('Please enter a valid number');
-
-      document.getElementById('loader').style.display = 'block';
-      document.getElementById('result').style.display = 'none';
+    async function getDP() {
+      const number = document.getElementById("number").value.trim();
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = "Loading...";
 
       try {
-        const res = await fetch(`/api/get-dp?number=${encodeURIComponent(fullNumber)}`);
+        const res = await fetch(`/api/get-dp?number=${encodeURIComponent(number)}`);
         const data = await res.json();
 
         if (data.success) {
-          document.getElementById('dpImage').src = data.dpUrl;
-          document.getElementById('downloadLink').href = data.dpUrl;
-          document.getElementById('result').style.display = 'block';
+          resultDiv.innerHTML = \`
+            <img src="\${data.dpUrl}" alt="DP"><br>
+            <a href="\${data.dpUrl}" download>Download</a>
+          \`;
         } else {
-          alert(data.message || 'Failed to get DP');
+          resultDiv.innerHTML = "DP not found or error occurred.";
         }
-      } catch {
-        alert('Error contacting backend');
-      } finally {
-        document.getElementById('loader').style.display = 'none';
+      } catch (err) {
+        resultDiv.innerHTML = "Error contacting backend.";
       }
-    };
+    }
   </script>
 </body>
 </html>
