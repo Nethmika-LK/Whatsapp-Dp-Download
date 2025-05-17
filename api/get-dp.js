@@ -1,28 +1,34 @@
-import axios from 'axios';
-import * as cheerio from 'cheerio';
+import cheerio from 'cheerio';
+import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
   const { number } = req.query;
-  if (!number) {
-    return res.status(400).json({ success: false, message: 'Number query param required' });
+
+  if (!number || !/^\d+$/.test(number)) {
+    return res.status(400).json({ success: false, message: 'Invalid number format' });
   }
 
   try {
-    const url = `https://toolzin.com/tools/whatsapp-dp-downloader?number=${number}`;
-
-    const response = await axios.get(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0' }
+    const response = await fetch('https://toolzin.com/tools/whatsapp-dp-downloader', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'Mozilla/5.0'
+      },
+      body: `number=${number}`
     });
 
-    const $ = cheerio.load(response.data);
-    const dpUrl = $('img.avatar').attr('src');
+    const html = await response.text();
+    const $ = cheerio.load(html);
 
-    if (dpUrl) {
-      return res.status(200).json({ success: true, dpUrl });
-    } else {
+    const dpUrl = $('.download-btn').attr('href');
+
+    if (!dpUrl || !dpUrl.startsWith('https')) {
       return res.status(404).json({ success: false, message: 'DP not found' });
     }
+
+    return res.status(200).json({ success: true, dpUrl });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Error fetching DP' });
+    return res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 }
