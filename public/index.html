@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TikTok Downloader</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 50px;
+    }
+    input, button {
+      padding: 10px;
+      width: 80%;
+      margin: 10px auto;
+      font-size: 16px;
+    }
+    video {
+      margin-top: 20px;
+      max-width: 90%;
+    }
+  </style>
+</head>
+<body>
+  <h1>TikTok Video Downloader (No Watermark)</h1>
+  <input type="text" id="url" placeholder="Paste TikTok link..." />
+  <button onclick="download()">Download</button>
+
+  <div id="result"></div>
+
+  <script>
+    async function download() {
+      const url = document.getElementById('url').value;
+      const res = await fetch(`/api/tiktok?url=${encodeURIComponent(url)}&apikey=sadiya123`);
+      const data = await res.json();
+
+      if (data.status) {
+        document.getElementById('result').innerHTML = \`
+          <h3>\${data.title}</h3>
+          <p>By: \${data.nickname} (@\${data.author})</p>
+          <video controls src="\${data.video.nowm}"></video>
+          <br>
+          <a href="\${data.video.nowm}" download>Download Now</a>
+        \`;
+      } else {
+        document.getElementById('result').innerHTML = '<p style="color:red;">' + data.message + '</p>';
+      }
+    }
+  </script>
+</body>
+</html>
