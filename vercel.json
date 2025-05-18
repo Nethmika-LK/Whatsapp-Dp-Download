@@ -1,10 +1,9 @@
 {
   "version": 2,
   "builds": [
-    {
-      "src": "api/scrape.js",
-      "use": "@vercel/node"
-    }
+    { "src": "api/download.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/download/tiktok", "dest": "/api/download.js" }
   ]
 }
-
