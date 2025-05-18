@@ -1,8 +1,13 @@
 {
   "name": "tiktok-api",
   "version": "1.0.0",
-  "main": "api/scrape.js",
+  "description": "TikTok video downloader API hosted on Vercel",
+  "main": "api/download.js",
+  "type": "module",
+  "scripts": {
+    "start": "node api/download.js"
+  },
   "dependencies": {
-    "axios": "^1.6.0"
+    "node-fetch": "^3.4.1"
   }
 }
