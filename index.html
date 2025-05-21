@@ -2,100 +2,84 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>TikTok Downloader</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TikTok Downloader</title>
   <style>
     body {
-      background: #121212;
-      color: white;
-      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      font-family: sans-serif;
       text-align: center;
       padding: 2rem;
     }
     input, button {
       padding: 0.8rem;
+      margin: 0.5rem;
       width: 90%;
       max-width: 500px;
-      margin: 0.5rem;
       border: none;
       border-radius: 5px;
     }
-    input {
-      background: #222;
-      color: white;
-    }
-    button {
-      background: #00c853;
-      color: white;
-      cursor: pointer;
-    }
-    .video-box {
+    input { background: #222; color: #fff; }
+    button { background: #00c853; color: white; cursor: pointer; }
+    .result {
       background: #1e1e1e;
-      padding: 1rem;
       margin-top: 1rem;
-      border-radius: 10px;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    img {
-      max-width: 100%;
+      padding: 1rem;
       border-radius: 10px;
     }
-    .links a {
-      display: inline-block;
-      margin: 0.5rem;
+    img { max-width: 100%; border-radius: 10px; }
+    a {
+      display: block;
       background: #2962ff;
       color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
       text-decoration: none;
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
-  <h2>TikTok Downloader</h2>
-  <input type="text" id="tiktokUrl" placeholder="Paste TikTok link here" />
-  <button onclick="fetchVideo()">Get Video</button>
 
-  <div id="result"></div>
+  <h2>TikTok Video Downloader</h2>
+  <input type="text" id="tiktokUrl" placeholder="Paste TikTok video link here" />
+  <button onclick="download()">Download</button>
+
+  <div id="result" class="result"></div>
 
   <script>
-    async function fetchVideo() {
-      const inputUrl = document.getElementById('tiktokUrl').value.trim();
-      const apiKey = "edbcfabbca5a9750";
-      const apiUrl = `https://api-dark-shan-yt.koyeb.app/download/tiktok?url=${encodeURIComponent(inputUrl)}&apikey=${apiKey}`;
-      const resultDiv = document.getElementById('result');
+    async function download() {
+      const inputUrl = document.getElementById("tiktokUrl").value.trim();
+      const resultDiv = document.getElementById("result");
       resultDiv.innerHTML = "Loading...";
 
       try {
-        const res = await fetch(apiUrl);
-        const json = await res.json();
+        const proxy = "https://corsproxy.io/?";
+        const api = `https://api-dark-shan-yt.koyeb.app/download/tiktok?url=${encodeURIComponent(inputUrl)}&apikey=edbcfabbca5a9750`;
+        const response = await fetch(proxy + encodeURIComponent(api));
+        const json = await response.json();
 
-        console.log("API Response:", json); // DEBUG LINE
-
-        if (json.status && json.result) {
-          const v = json.result;
-          resultDiv.innerHTML = `
-            <div class="video-box">
-              <img src="${v.cover}" alt="Cover"/>
-              <h3>@${v.author?.username || v.author?.unique_id}</h3>
-              <p>${v.desc || 'No description'}</p>
-              <div class="links">
-                <a href="${v.nowm}" download>Download No Watermark</a>
-                <a href="${v.wm}" download>Download Watermark</a>
-                <a href="${v.music}" download>Download Music</a>
-              </div>
-            </div>
-          `;
-        } else {
-          resultDiv.innerHTML = "Failed to load video. Check TikTok URL or try again.";
+        if (!json.status || !json.result) {
+          resultDiv.innerHTML = "Invalid response from API.";
+          return;
         }
-      } catch (err) {
-        console.error(err);
+
+        const data = json.result;
+        resultDiv.innerHTML = `
+          <img src="${data.cover}" alt="Thumbnail">
+          <h3>@${data.author?.username || 'unknown'}</h3>
+          <p>${data.desc || 'No description'}</p>
+          <a href="${data.nowm}" download>Download No Watermark</a>
+          <a href="${data.wm}" download>Download With Watermark</a>
+          <a href="${data.music}" download>Download Music</a>
+        `;
+      } catch (e) {
+        console.error(e);
         resultDiv.innerHTML = "Error fetching video data.";
       }
     }
   </script>
+
 </body>
 </html>
