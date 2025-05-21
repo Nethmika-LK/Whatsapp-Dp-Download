@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TikTok Downloader</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 2rem;
+    }
+    input, button {
+      padding: 0.7rem;
+      font-size: 1rem;
+      width: 90%;
+      max-width: 500px;
+      margin: 0.5rem auto;
+      display: block;
+      border: none;
+      border-radius: 5px;
+    }
+    input {
+      background: #222;
+      color: #fff;
+    }
+    button {
+      background: #ff2d55;
+      color: #fff;
+      cursor: pointer;
+    }
+    .video-card {
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 1rem;
+      max-width: 450px;
+      margin: 1rem auto;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+    img {
+      width: 100%;
+      border-radius: 10px;
+    }
+    .author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 1rem;
+    }
+    .author img {
+      width: 50px;
+      border-radius: 50%;
+    }
+    .buttons a {
+      margin: 0.5rem;
+      display: inline-block;
+      padding: 0.6rem 1rem;
+      background: #00c853;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h2>TikTok Downloader</h2>
+  <input type="text" id="tiktokUrl" placeholder="Paste TikTok URL here" />
+  <button onclick="getVideo()">Download</button>
+
+  <div id="result"></div>
+
+  <script>
+    async function getVideo() {
+      const url = document.getElementById('tiktokUrl').value.trim();
+      if (!url) return alert("Please enter a TikTok link");
+
+      const api = `https://api-dark-shan-yt.koyeb.app/download/tiktok?url=${encodeURIComponent(url)}&apikey=edbcfabbca5a9750`;
+
+      try {
+        const res = await fetch(api);
+        const json = await res.json();
+
+        if (json.status && json.result) {
+          const data = json.result;
+
+          document.getElementById('result').innerHTML = `
+            <div class="video-card">
+              <img src="${data.cover}" alt="cover" />
+              <div class="author">
+                <img src="${data.author.avatar}" alt="avatar" />
+                <div>
+                  <strong>${data.author.nickname}</strong><br/>
+                  @${data.author.username}
+                </div>
+              </div>
+              <p>${data.desc}</p>
+              <div class="buttons">
+                <a href="${data.nowm}" download>Download (No Watermark)</a>
+                <a href="${data.wm}" download>Download (Watermarked)</a>
+                <a href="${data.music}" download>Download Music</a>
+              </div>
+            </div>
+          `;
+        } else {
+          document.getElementById('result').innerHTML = "Invalid or unavailable video.";
+        }
+      } catch (e) {
+        console.error(e);
+        document.getElementById('result').innerHTML = "Error fetching video data.";
+      }
+    }
+  </script>
+</body>
+</html>
